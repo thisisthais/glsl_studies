@@ -17,23 +17,8 @@ float box(vec2 _st,vec2 _size,float _smoothEdges){
 }
 
 float plot(vec2 _st,float pct){
-  return smoothstep(pct-.005,pct,_st.y)-
-  smoothstep(pct,pct+.005,_st.y);
-}
-
-float boxOutline(vec2 _st,vec2 _size,float _smoothEdges){
-  return box(_st,_size,_smoothEdges)-box(_st,_size-vec2(.01),_smoothEdges);
-}
-
-float XOR(float a,float b){
-  return(a+b)*(2.-a-b);
-}
-
-float frame(vec2 _st,vec2 _size){
-  vec2 bl=step(_size,_st);
-  vec2 tr=step(_size,1.-_st);
-  
-  return bl.x*bl.y*tr.x*tr.y;
+  return smoothstep(pct-.04,pct,_st.y)-
+  smoothstep(pct,pct+.04,_st.y);
 }
 
 vec2 tile(vec2 _st,float _zoom){
@@ -41,18 +26,22 @@ vec2 tile(vec2 _st,float _zoom){
   return fract(_st);
 }
 
-float corners(vec2 _st,vec2 _size){
-  vec2 bl=step(_size,_st);
-  vec2 tr=step(_size,1.-_st);
-  
-  return 1.-XOR(tr.y,XOR(tr.x,XOR(bl.x,bl.y)));
-}
-
 float truncatedFrame(vec2 _st,vec2 _size){
+  // normal use of step to make canvas frame
   vec2 bl=step(_size,_st);
   vec2 tr=step(_size,1.-_st);
   
-  return bl.x*bl.y*tr.x*tr.y;
+  // make boxes that cover corner spots
+  float blBox=box(_st+vec2(.41,.41),vec2(.2),.01);
+  float trBox=box(_st-vec2(.41,.41),vec2(.2),.01);
+  float tlBox=box(_st+vec2(.41,-.41),vec2(.2),.01);
+  float brBox=box(_st+vec2(-.41,.41),vec2(.2),.01);
+  
+  // doing * is like AND, doing + is like OR
+  // so this is like doing frame OR not box
+  // (not because the box colors are inverted from the frame colors, i think)
+  return bl.x*bl.y*tr.x*tr.y+blBox+trBox+tlBox+brBox;
+  
 }
 
 void main(){
@@ -61,15 +50,16 @@ void main(){
   
   st=tile(st,10.);
   
-  color=vec3(frame(st,vec2(.1)));
-  float rotate=mod(u_time,PI);
-  st=st-vec2(.5);
-  st*=rotate;
-  st=st+vec2(.5);
-  color*=vec3(1.-box(st-vec2(.5),vec2(.5),.01));
-  color*=vec3(1.-box(st+vec2(.5),vec2(.5),.01));
-  color*=vec3(1.-box(st+vec2(.5,-.5),vec2(.5),.01));
-  color*=vec3(1.-box(st+vec2(-.5,.5),vec2(.5),.01));
+  // float rotate=mod(u_time,PI);
+  // st=st-vec2(.5);
+  // st*=rotate;
+  // st=st+vec2(.5);
+  
+  color=vec3(truncatedFrame(st,vec2(.02)));
+  color*=vec3(1.-plot(st-vec2(.8),st.x));
+  color*=vec3(1.-plot(st-vec2(.2),-st.x));
+  color*=vec3(1.-plot(st-vec2(.8),1.-st.x));
+  color*=vec3(1.-plot(st+vec2(.8),st.x));
   
   gl_FragColor=vec4(color,1.);
 }
