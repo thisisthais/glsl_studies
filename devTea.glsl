@@ -59,13 +59,17 @@ vec2 tile(vec2 _st,float _zoom){
 void main(void){
   vec2 st=gl_FragCoord.xy/u_resolution.xy;
   vec3 color=vec3(0.);
+  
   st=tile(st,4.);
+  
   // normalize the coordinate space
   st-=vec2(.5);
   st*=2.;
+  
+  // spiiiiiin
   pR(st,mod(u_time,TWO_PI));
   
-  // distance metric
+  // distance shapes
   float triangle=equiTri(st*vec2(3.));
   float circle=sdCircle(st*vec2(3.),.5);
   float pentagon=sdPentagon(st*vec2(3.),.5);

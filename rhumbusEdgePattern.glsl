@@ -7,6 +7,7 @@ uniform vec2 u_mouse;
 uniform float u_time;
 
 #define PI 3.14159265358979323846
+#define TWO_PI 6.28318530718
 
 float box(vec2 _st,vec2 _size,float _smoothEdges){
   _size=vec2(.5)-_size*.5;
