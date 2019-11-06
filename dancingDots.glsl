@@ -12,11 +12,26 @@ float circle(in vec2 _st,in float _radius){
   dot(l,l)*4.);
 }
 
-vec2 tile(vec2 st,float _zoom){
+vec2 moveAndTile(vec2 st,float _zoom){
   st*=_zoom;
   
-  st+=step(1.,mod(st.x*st.y,2.))*.25*u_time;
-  st-=step(1.,mod(st.x-st.y+1.,2.))*.25*u_time;
+  // slow down time
+  float time=u_time/2.;
+  
+  // naming some variables for ease of reading
+  float stepCounter=step(.5,fract(time));
+  float colTracker=step(1.,mod(st.y,2.));
+  float rowTracker=step(1.,mod(st.x,2.));
+  
+  // when stepCounter is 1 (which is half the time), we move side to side
+  // alternating rows move alternating directions
+  st.x-=2.*fract(time)*(1.-colTracker)*stepCounter;
+  st.x+=2.*fract(time)*colTracker*stepCounter;
+  
+  // otherwise when stepCounter is 0, we move up and down
+  // still alternating directions
+  st.y+=2.*fract(time)*rowTracker*(1.-stepCounter);
+  st.y-=2.*fract(time)*(1.-rowTracker)*(1.-stepCounter);
   
   return fract(st);
 }
@@ -24,9 +39,9 @@ vec2 tile(vec2 st,float _zoom){
 void main(void){
   vec2 st=gl_FragCoord.xy/u_resolution.xy;
   vec3 color=vec3(0.);
-  st=tile(st,20.);
+  st=moveAndTile(st,10.);
   
-  color=vec3(circle(st,.6));
+  color=vec3(circle(st,.5));
   
   gl_FragColor=vec4(color,1.);
 }
