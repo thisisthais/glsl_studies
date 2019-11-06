@@ -23,8 +23,8 @@ vec2 tile(vec2 _st,float _zoom){
   // _st.x += step(1., mod(_st.y,2.0)) * 0.5;
   
   // Here is where the motion is happening
-  _st+=step(1.,mod(_st.x*_st.y,2.))*.5*u_time;
-  _st-=step(1.,mod(_st.x*_st.y+1.,2.))*.5*u_time;
+  _st+=step(1.,mod(_st.x-_st.y,2.))*.25*u_time;
+  _st-=step(1.,mod(_st.x-_st.y+1.,2.))*.25*u_time;
   
   // _st.x+=step(1.,mod(_st.y,2.))*.5*u_time;
   // _st.x-=step(1.,mod(_st.y+1.,2.))*.5*u_time;
@@ -35,9 +35,9 @@ void main(void){
   vec2 st=gl_FragCoord.xy/u_resolution.xy;
   vec3 color=vec3(0.);
   st=tile(st,20.);
-  st=(st-.5)*2.;
+  // st=(st-.5)*2.;
   
-  color=vec3(circle(st,.5));
+  color=vec3(circle(st,.55));
   
   gl_FragColor=vec4(color,1.);
 }
