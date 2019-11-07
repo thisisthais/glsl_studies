@@ -37,7 +37,8 @@ vec2 moveAndTile(vec2 st,float _zoom){
 }
 
 void main(void){
-  vec2 st=gl_FragCoord.xy/u_resolution.xy;
+  vec2 myRes=u_resolution.yy/.5;
+  vec2 st=gl_FragCoord.xy/myRes.xy;
   vec3 color=vec3(0.);
   st=moveAndTile(st,10.);
   
