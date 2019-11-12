@@ -39,17 +39,28 @@ float shape(vec2 st,float radius){
   float a=atan(st.y,st.x);
   float m=abs(mod(2.*u_time,2.*PI)-PI)/a*2.2;
   float f=radius;
-  m+=noise(st+u_time*.1)*.5;
+  
+  // stripeys, where they coming from, idk
+  m+=noise(st+u_time*.3)*50.;
+  st-=.9;
+  m+=noise(st+u_time*.3)*50.;
+  st.y+=.4;
+  m+=noise(st+u_time*.3)*50.;
   
   f+=sin(a*100.)*noise(st+u_time*.2)*.1;
   f+=(sin(a*100.)*.1*pow(m,2.));
-  return 1.-smoothstep(f,f+.007,r);
+  return smoothstep(f,f+.007,r);
+}
+
+float shapeBorder(vec2 st,float radius,float width){
+  return shape(st,radius)-shape(st,radius-width);
 }
 
 void main(void){
   vec2 st=gl_FragCoord.xy/u_resolution.xy;
   vec3 color=vec3(0.);
   color=vec3(shape(st,.5));
+  color+=circle(st,.005*(sin(u_time)+1.1));
   
   gl_FragColor=vec4(color,1.);
 }
