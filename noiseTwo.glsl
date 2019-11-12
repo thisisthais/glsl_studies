@@ -41,11 +41,15 @@ float shape(vec2 st,float radius){
   float f=radius;
   
   // stripeys, where they coming from, idk
-  m+=noise(st+u_time*.3)*50.;
+  m*=noise(st+u_time*.1)*10.;
   st-=.9;
-  m+=noise(st+u_time*.3)*50.;
+  m*=noise(st+u_time*.1)*5.;
   st.y+=.4;
-  m+=noise(st+u_time*.3)*50.;
+  m*=noise(st+u_time*.1)*7.;
+  st=1.-st;
+  m*=noise(st+u_time*.1)*5.;
+  st+=.9;
+  m*=noise(st+u_time*.1)*10.;
   
   f+=sin(a*100.)*noise(st+u_time*.2)*.1;
   f+=(sin(a*100.)*.1*pow(m,2.));
