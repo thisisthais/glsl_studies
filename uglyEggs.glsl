@@ -19,7 +19,7 @@ float noise(float x){
   float i=floor(x);
   float f=fract(x);
   float u=f*f*(3.-2.*f);
-  return mix(rand(i),rand(i+1.),u/.8);
+  return mix(rand(i),rand(i+1.),u);
 }
 
 float circle(in vec2 _st,in float _radius){
@@ -47,12 +47,14 @@ void main(void){
   vec2 st=gl_FragCoord.xy/u_resolution.xy;
   vec3 color=vec3(0.);
   
-  st.x+=.01;
-  st=tile(vec2(noise(st.x),noise(st.y)),10.);
-  st=rotate2D(vec2(noise(st.x),noise(st.y)),-PI*u_time*.25);
-  color=vec3(circle(vec2(noise(st.x),noise(st.y)),.1));
-  st.x+=.3;
-  color+=vec3(circle(vec2(noise(st.x),noise(st.y)),.1));
+  st=tile(st,4.);
+  
+  // high frequency multiplies, amplitude divides to be low
+  float freq=10.+30.*abs(sin(u_time/10.));
+  float amp=80.;
+  vec2 noisyST=st+vec2(noise(st.x*freq),noise(st.y*freq))/amp;
+  
+  color=vec3(circle(noisyST,.1));
   
   gl_FragColor=vec4(color,1.);
 }

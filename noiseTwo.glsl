@@ -57,14 +57,36 @@ float shape(vec2 st,float radius){
 }
 
 float shapeBorder(vec2 st,float radius,float width){
-  return shape(st,radius)-shape(st,radius-width);
+  return shape(st,radius)-shape(st,radius+width);
+}
+
+vec2 rotate2D(vec2 _st,float _angle){
+  _st-=.5;
+  _st=mat2(cos(_angle),-sin(_angle),
+  sin(_angle),cos(_angle))*_st;
+  _st+=.5;
+  return _st;
+}
+
+float squigglyCircle(vec2 st,float radius){
+  st=vec2(.5)-st;
+  float r=length(st)*2.;
+  float a=atan(st.y,st.x);
+  float m=abs(mod(u_time*2.,PI*2.)-PI)/3.6;
+  float f=radius;
+  m+=noise(st+u_time*.1)*.5;
+  
+  f+=sin(a*50.)*noise(st+u_time*.2)*.1;
+  f+=(sin(a*20.)*.1*pow(m,2.));
+  return 1.-smoothstep(f,f+.007,r);
 }
 
 void main(void){
   vec2 st=gl_FragCoord.xy/u_resolution.xy;
   vec3 color=vec3(0.);
-  color=vec3(shape(st,.5));
-  color+=circle(st,.005*(sin(u_time)+1.1));
+  st=rotate2D(st,PI*u_time/10.);
+  color=vec3(shapeBorder(st,1.5,30.));
+  color*=squigglyCircle(st,.5*(sin(u_time)+2.1));
   
   gl_FragColor=vec4(color,1.);
 }
