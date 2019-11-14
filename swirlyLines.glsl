@@ -9,7 +9,7 @@ uniform float u_time;
 uniform vec2 u_mouse;
 
 float lines(float thickness,float num){
-  return step(thickness,abs(sin(num)));
+  return smoothstep(thickness,thickness+.05,abs(sin(num)));
 }
 
 vec2 rotate2D(vec2 _st,float _angle){
